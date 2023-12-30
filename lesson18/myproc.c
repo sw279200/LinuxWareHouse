@@ -1,39 +1,70 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include<string.h>
+#include<errno.h>
+#define N 10
+
+typedef  void (*callback_t)();
+
+void Worker()
+{
+    int cnt = 10;
+    while(cnt)
+    {
+        printf("I am a child process, pid: %d  ppid: %d, cnt: %d\n",getpid(),getppid(),cnt);
+        sleep(1);
+        --cnt;
+    }
+}
 
 
-int g_val = 100;
+void createSubProcess(int n ,callback_t cb)
+{
+    int i = 0;
+    for(;i<n;i++)
+    {
+        sleep(1);
+        pid_t id = fork();
+        if(id == 0)
+        {
+            printf("cearte child process success: %d\n",i);
+            //child
+            cb();
+            exit(0);
+        }
+    }
+}
+
 
 int main()
 {
-    pid_t id = fork();
-    if(id == 0)
+    while(1)
     {
-        //child
-        int cnt = 5;
-        while(1)
-        {
-            printf("child, Pid: %d, Ppid: %d, g_val: %d, &g_val=%p\n", getpid(), getppid(), g_val, &g_val);
-            sleep(1);
-            if(cnt == 0)
-            {
-                g_val=200;
-                printf("child change g_val: 100->200\n");
-            }
-            cnt--;
-        }
+        printf("I am a nomal process  pid : %d\n",getpid());
+        sleep(1);    
     }
-    else
-    {
-        //father
-        while(1)
-        {
-            printf("father, Pid: %d, Ppid: %d, g_val: %d, &g_val=%p\n", getpid(), getppid(), g_val, &g_val);
-            sleep(1);
-        }
-    }
+  // int ret = 0;
+  //  printf("before: %d\n", errno);
+  //  FILE *fp = fopen("./log.txt", "r");
+  //  if(fp == NULL) {
+  //      printf("after: %d, error string : %s\n", errno, strerror(errno));
+  //  }
+   // int a = 10;
+   // a/=0;
+   //
+   //int * p = NULL;
+  // *p = 100;
+    // int i = 0;
+   // for(;i<200;i++)
+   // {
+   //     printf("%d : %s\n",i,strerror(i));
+   // }
 
-    sleep(100);
-    return 0;
+   // createSubProcess(N,Worker);
+   //只有父进程走到这里
+   // sleep(100);
+
+    return 0 ;
 }
+

@@ -4,35 +4,71 @@
 #include<sys/types.h>
 #include<sys/wait.h>
 
-void Worker()
+
+
+void Worker(int number)
 {
-    int cnt = 5;
+    int *p = NULL;
+    int cnt = 10;
     while(cnt)
     {
-        printf("I am child process, pid : %d , ppid: %d, cnt: %d\n",getpid(),getppid(),cnt--);
+        printf("I am child process, pid: %d, ppid: %d, cnt: %d, number: %d\n", getpid(), getppid(), cnt--, number);
         sleep(1);
+
+        //*p = 100;
+        //int a = 10;
+        //a /= 0;
     }
 }
 
+const int n = 10;
 
 int main()
 {
-    pid_t id = fork();
-    if(id==0)
+
+    for(int i = 0;i < n; i++)
     {
-        //child
-        Worker();
-        exit(0);
-    }
-    else{
-        sleep(10);
-        //father
-        pid_t rid = wait(NULL);
-        if(rid==id)
+        pid_t id = fork();
+        if(id == 0)
         {
-            printf("wait success! pid: %d\n",getpid());
+            Worker(i);
+            //status = i;
+            exit(0);
         }
     }
+
+    //等待多个子进程？
+    for(int i = 0; i < n; i++)
+    {
+        int status = 0;
+        pid_t rid = waitpid(-1, &status, 0); // pid>0, -1:任意一个退出的子进程
+        if(rid > 0){
+            printf("wait child %d success, exit code: %d\n", rid, WEXITSTATUS(status));
+        }
+    }
+   // pid_t id = fork();
+   // if(id==0)
+   // {
+   //     //child
+   //     Worker();
+   //     exit(1);
+   // }
+   // else{
+   //    // sleep(10);
+   //     //father
+   //     printf("wait before!\n");
+   //    // pid_t rid = wait(NULL);
+   //     int status = 0;
+   //     pid_t rid = waitpid(id,&status,0);
+
+   //     printf("wait after!\n");
+   //     if(rid==id)
+   //     {
+   //         printf("wait success! pid: %d rpid : %d,  exit sig: %d,  exit code: %d\n",getpid(),rid,status&0x7F,(status>>8)&0xFF);
+   //     }
+
+   //    // sleep(10);
+   // }
     return 0;
 }
 

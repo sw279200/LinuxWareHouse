@@ -1,0 +1,7 @@
+system call:hello write
+hello fprintf
+C: hello printf
+C: hello fputs
+hello fprintf
+C: hello printf
+C: hello fputs

@@ -28,12 +28,17 @@ void Print()
 
 void * ThreadRoutine(void * args)
 {
-
-   ThreadData *td = static_cast<ThreadData*>(args);
+    int a = 10;
+    ThreadData *td = static_cast<ThreadData*>(args);
     while(true)
     {
         std::cout<<"I am a new pthread"<<"threadname: "<<td->threadname<<"create time: "<<td->createtime<<std::endl;
         td->func();
+        // if(td->threadname=="thread - 4")
+        // {
+        //     std::cout<<td->threadname<<" 触发了异常"<<std::endl;
+        //     a/=0;
+        // }
         sleep(1);
     }
 }
@@ -53,8 +58,13 @@ int main()
         sleep(1);
         
     }
+
+    for(const auto &tid : pthreads)
+    {
+        std::cout<<"thread id : "<<tid<<std::endl;
+    }
     
-      while(true)
+    while(true)
     {
         std::cout<<"I am a main pthread"<<std::endl;
         sleep(1);

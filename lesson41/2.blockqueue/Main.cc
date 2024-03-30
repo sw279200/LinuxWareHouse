@@ -5,19 +5,52 @@
 #include<string>
 #include"task.hpp"
 
+class ThreadData
+{
+public:
+    ThreadData(const std::string & name,BlockQueue<Task>* bq)
+    : threadname(name)
+    ,_bq(bq)
+    {}
+
+    BlockQueue<Task> * getBQ()
+    {
+        return this->_bq;
+    }
+
+    void setBQ(BlockQueue<Task>* bq)
+    {
+        this->_bq = bq;
+    }
+
+    std::string getName()
+    {
+        return this->threadname;
+    }
+
+    void setName(std::string name)
+    {
+        this->threadname = name;
+    }
+
+
+private:
+    std::string threadname;
+    BlockQueue<Task>* _bq;
+};
 
 void * consumer(void * args)
 {
-    BlockQueue<Task>* bq = static_cast<BlockQueue<Task>*>(args);
+    ThreadData* td = static_cast<ThreadData*>(args);
     while(true)
     {
         sleep(1);
         //1.拿数据  bq->pop(&data)
         Task t;
-        bq->Pop(&t);
+        td->getBQ()->Pop(&t);
         //2.处理数据
         t.Run();
-        std::cout<<"consumer Result: "<<t.PrintResult()<<std::endl;
+        std::cout<<"consumer Result: "<<t.PrintResult()<<" threadname: "<<td->getName()<<std::endl;
 
         //消费者没有sleep
     }
@@ -28,7 +61,8 @@ void * consumer(void * args)
 
 void * productor(void * args)
 {
-    BlockQueue<Task>* bq = static_cast<BlockQueue<Task>*>(args);
+    ThreadData* td = static_cast<ThreadData*>(args);
+
     while(true)
     {
         //1.有数据
@@ -39,9 +73,9 @@ void * productor(void * args)
         char oper = opers[rand() % opers.size()];
         //2.生产数据 
         Task t(data1,data2,oper);
-        bq->Push(t);
+        td->getBQ()->Push(t);
         std::string task_string = t.PrintTask();
-        std::cout<<"productor task: "<<task_string<<std::endl;
+        std::cout<<"productor task: "<<task_string<<" threadname: "<<td->getName()<<std::endl;
 
         sleep(1);
 
@@ -53,13 +87,21 @@ int main()
 {
     srand((uint16_t)time(nullptr) ^ getpid() ^ pthread_self());//只是为了生成更随机的数据
     BlockQueue<Task>* bq = new BlockQueue<Task>();
-    pthread_t c,p;
-    pthread_create(&p,nullptr,productor,bq);
-    pthread_create(&c,nullptr,consumer,bq);
-   
+    pthread_t c[3],p[2];
+    ThreadData td1("consumer-1",bq),td2("consumer-2",bq),td3("consumer-3",bq),td4("productor-1",bq),td5("productor-2",bq);
 
-    pthread_join(c,nullptr);
-    pthread_join(p,nullptr);
+    pthread_create(&p[0],nullptr,productor,&td4);
+    pthread_create(&p[1],nullptr,productor,&td4);
+    pthread_create(&c[0],nullptr,consumer,&td1);
+    pthread_create(&c[1],nullptr,consumer,&td2);
+    pthread_create(&c[2],nullptr,consumer,&td3);
+    
+
+    pthread_join(c[0],nullptr);
+    pthread_join(c[1],nullptr);
+    pthread_join(c[2],nullptr);
+    pthread_join(p[0],nullptr);
+    pthread_join(p[1],nullptr);
 
     return 0;
 }

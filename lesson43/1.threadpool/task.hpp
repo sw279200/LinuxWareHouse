@@ -1,12 +1,14 @@
 #pragma once
 #include<string>
 const int defaultvalue = 0;
+
+//用于判断任务执行结果是否正确的错误码，如果是正常结果，默认是0
 enum
 {
     ok = 0,
-    div_zero,
-    mod_zero,
-    unknow
+    div_zero,//除0错误
+    mod_zero,//模0错误
+    unknow  //未知错误
 };
 
 const std::string opers = "+-*/%";
@@ -19,7 +21,7 @@ public:
     {
     }
 
-    std::string PrintTask()
+    std::string PrintTask()   //构建执行的任务字符串，方便测试观察
     {
         std::string s;
         s= std::to_string(_data_x);
@@ -30,7 +32,7 @@ public:
         return s;
     }
 
-    std::string PrintResult()
+    std::string PrintResult()  //构建执行任务后的结果字符串，便于测试观察
     {
         std::string s;
         s= std::to_string(_data_x);
@@ -82,7 +84,7 @@ public:
         }
     }
 
-    void operator()()
+    void operator()()//运算符重载实现仿函数
     {
         Run();
     }

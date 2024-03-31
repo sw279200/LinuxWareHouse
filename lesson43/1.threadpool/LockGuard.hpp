@@ -11,12 +11,12 @@ public:
 
     void Lock()
     {
-        pthread_mutex_lock(_lock);
+        pthread_mutex_lock(_lock);//加锁
     }
 
     void Unlock()
     {
-        pthread_mutex_unlock(_lock);
+        pthread_mutex_unlock(_lock);//解锁
     }
 
 
@@ -25,6 +25,8 @@ public:
 private:
     pthread_mutex_t * _lock;
 };
+
+//RAII风格的加锁方式
 
 class LockGuard
 {

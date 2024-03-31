@@ -151,7 +151,7 @@ class Conf
 public:
     Conf()
     {
-        log.Enable(Classfile);
+        log.Enable(Screen);
     }
     ~Conf(){}
 };

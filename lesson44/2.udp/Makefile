@@ -1,0 +1,11 @@
+.PHONY:all
+all:udpserver udpclient
+
+udpserver:Main.cc
+	g++ -o $@ $^ -g -std=c++11
+udpclient:UdpClient.cc
+	g++ -o $@ $^ -g -std=c++11
+
+.PHONY:clean
+clean:
+	rm -rf udpserver udpclient

@@ -71,7 +71,8 @@ public:
             log.LogMessage(INFO, "client say# %s", buffer);
             buffer[n] = 0;
 
-            std::string info = "server is sending to:";
+            //相当于一次数据处理
+            std::string info = "server say# ";
             info += buffer;
             sendto(_sockfd, info.c_str(), info.size(), 0, (struct sockaddr *)&client, len);
         }

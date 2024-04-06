@@ -80,7 +80,7 @@ public:
         switch (style)
         {
         case Screen:
-            std::cout << message;
+            std::cout << message<<std::endl;
             break;
         case Onefile:
             WriteLogToOnefile("all", message);

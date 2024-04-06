@@ -1,87 +1,46 @@
 #pragma once
 #include<string>
-const int defaultvalue = 0;
+#include<iostream>
+#include"Log.hpp"
+#include"Init.hpp"
 
-//用于判断任务执行结果是否正确的错误码，如果是正常结果，默认是0
-enum
-{
-    ok = 0,
-    div_zero,//除0错误
-    mod_zero,//模0错误
-    unknow  //未知错误
-};
+Init init;
 
-const std::string opers = "+-*/%";
 class Task
 {
 public:
-    Task(){}
-    Task(int x, int y, char op, int result=defaultvalue, int code=ok)
-        : _data_x(x), _data_y(y), _oper(op)
-    {
-    }
-
-    std::string PrintTask()   //构建执行的任务字符串，方便测试观察
-    {
-        std::string s;
-        s= std::to_string(_data_x);
-        s+=_oper;
-        s+=std::to_string(_data_y);
-        s+="=?";
-
-        return s;
-    }
-
-    std::string PrintResult()  //构建执行任务后的结果字符串，便于测试观察
-    {
-        std::string s;
-        s= std::to_string(_data_x);
-        s+=_oper;
-        s+=std::to_string(_data_y);
-        s+="=";
-        s+=std::to_string(_result);
-        s+=" [";
-        s+=std::to_string(_code);
-        s+="]";
-
-        return s;
-    }
+    Task(int sockfd, const uint16_t &clientport, const std::string &clientip)
+    :clientip_(clientip),clientport_(clientport),sockfd_(sockfd)
+    {}
 
     void Run()
     {
-        switch (_oper)
+        char buffer[4096];
+        // 测试代码
+        ssize_t n = read(sockfd_, buffer, sizeof(buffer));
+        if (n > 0)
         {
-        case '+':
-            _result = _data_x + _data_y;
-            break;
-        case '-':
-            _result = _data_x - _data_y;
-            break;
-        case '*':
-            _result = _data_x * _data_y;
-            break;
-        case '/':
-        {
-            if (_data_y == 0)
+            buffer[n] = 0;
+            std::cout << "client key# " << buffer << std::endl;
+            std::string echo_string = init.translation(buffer);
+
+            ssize_t w = write(sockfd_, echo_string.c_str(), echo_string.size());
+            if(w<0)
             {
-                _code = div_zero;
+                log.LogMessage(WARNING,"write error ,errno:%d,strerror:%s",errno,strerror(errno));
             }
-            else _result = _data_x / _data_y;
         }
-        break;
-        case '%':
+        else if (n == 0)
         {
-            if (_data_y == 0)
-            {
-                _code = mod_zero;
-            }
-            else _result = _data_x % _data_y;
+            log.LogMessage(INFO, "%s:%d quit,server close sockfd:%d", clientip_.c_str(), clientport_, sockfd_);
+        
         }
-        break;
-        default:
-            _code = unknow;
-            break;
+        else
+        {
+            log.LogMessage(WARNING, "read error,sockfd:%d,clientip:%s ,clientport:%d ", sockfd_, clientip_.c_str(), clientport_);
+            
         }
+        close(sockfd_);
     }
 
     void operator()()//运算符重载实现仿函数
@@ -90,11 +49,8 @@ public:
     }
 
     ~Task() {}
-
 private:
-    int _data_x; // 操作数
-    int _data_y; // 操作数
-    char _oper;  // 运算符
-    int _result; // 结果
-    int _code;   // 结果码 0:可信  !0：不可信
+    int sockfd_;
+    std::string clientip_;
+    uint16_t clientport_;
 };

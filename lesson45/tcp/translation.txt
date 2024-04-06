@@ -1,0 +1,33 @@
+# 英汉互译键值对  
+# English-Chinese Key-Value Pairs  
+  
+hello: 你好  
+world: 世界  
+goodbye: 再见  
+thank you: 谢谢  
+please: 请  
+welcome: 欢迎  
+happy: 快乐的  
+sad: 悲伤的  
+angry: 生气的  
+excited: 兴奋的  
+  
+apple: 苹果  
+banana: 香蕉  
+orange: 橙子  
+grape: 葡萄  
+peach: 桃子  
+watermelon: 西瓜  
+strawberry: 草莓  
+cherry: 樱桃  
+  
+morning: 早上  
+afternoon: 下午  
+evening: 晚上  
+night: 夜晚  
+weekday: 工作日  
+weekend: 周末  
+January: 一月  
+February: 二月  
+March: 三月  
+April: 四月

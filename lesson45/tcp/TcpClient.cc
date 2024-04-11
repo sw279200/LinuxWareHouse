@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
             {
                 isreconnect = true;
                 cnt--;
-                std::cerr << "connect error, reconnect: %d" << cnt << std::endl;
+                std::cerr << "connect error, reconnect: " << cnt << std::endl;
                 sleep(2);
             }
             else

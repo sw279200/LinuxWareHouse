@@ -14,6 +14,7 @@
 #include"ThreadPool.hpp"
 #include "task.hpp"
 #include<signal.h>
+#include"Daemon.hpp"
 
 const int defaultfd = -1;
 const std::string defaultip = "0.0.0.0";
@@ -97,7 +98,7 @@ public:
 
     void Start()
     {
-        signal(SIGPIPE,SIG_IGN);
+        Daemon();
         ThreadPool<Task>::GetInstance()->Start();
         log.LogMessage(INFO, "tcpServer is running ...");
         for (;;)

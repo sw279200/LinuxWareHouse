@@ -78,9 +78,26 @@ public:
         return newfd;
     }
 
-    int Connect()
+    int Connect(const std::string & clientip,const uint16_t & clientport)
     {
-        return 0;
+        struct sockaddr_in peer;
+        memset(&peer,0,sizeof(peer));
+        peer.sin_family = AF_INET;
+        peer.sin_port = htons(clientport);
+        inet_pton(AF_INET,clientip.c_str(),&(peer.sin_addr));
+        int n = connect(_sockfd,(struct sockaddr*)&peer,sizeof(peer));
+        if(n<0)
+        {
+            std::cerr<<"connect to error ..."<<std::endl;
+            return false;
+        }
+
+        return true;
+    }
+
+    int GetFd()
+    {
+        return _sockfd;
     }
 
     void Close()
